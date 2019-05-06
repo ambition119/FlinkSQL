@@ -20,7 +20,7 @@
 
     <groupId>ambition</groupId>
     <artifactId>blink</artifactId>
-    <version>v2.0.0</version>
+    <version>v3.0.0</version>
     <modules>
         <module>blink-common</module>
         <module>blink-client</module>

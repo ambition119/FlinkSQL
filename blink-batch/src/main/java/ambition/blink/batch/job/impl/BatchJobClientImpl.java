@@ -20,6 +20,7 @@ package ambition.blink.batch.job.impl;
 
 import ambition.blink.batch.BatchLocalEnvironment;
 import ambition.blink.batch.BatchTableUtils;
+import ambition.blink.common.table.FunctionInfo;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
@@ -31,6 +32,9 @@ import org.apache.flink.table.api.BatchQueryConfig;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableEnvironment;
 import org.apache.flink.table.api.java.BatchTableEnvironment;
+import org.apache.flink.table.functions.AggregateFunction;
+import org.apache.flink.table.functions.ScalarFunction;
+import org.apache.flink.table.functions.TableFunction;
 import org.apache.flink.table.sinks.BatchTableSink;
 import org.apache.flink.table.sources.BatchTableSource;
 import org.slf4j.Logger;
@@ -61,8 +65,7 @@ public class BatchJobClientImpl implements JobClient {
   }
 
   @Override
-  public StreamGraph getStreamGraph(JobParameter jobParameter, Map<String, String> extParams)
-      throws Exception {
+  public StreamGraph getStreamGraph(JobParameter jobParameter, Map<String, String> extParams) throws Exception {
     return null;
   }
 
@@ -74,6 +77,25 @@ public class BatchJobClientImpl implements JobClient {
     Map<String, List<String>> sqls = jobParam.getSqls();
 
     //udf
+    List<String> list = sqls.get(SqlConstant.FUNCTION);
+    if (CollectionUtils.isNotEmpty(list)) {
+      for (String funSql: list) {
+        FunctionInfo functionInfo = sqlService.sqlFunctionParser(funSql);
+        Class<?> clazz = Class.forName(functionInfo.getClassName());
+        Object udf = clazz.newInstance();
+
+        if (null != udf){
+          if (udf instanceof ScalarFunction) {
+            tEnv.registerFunction(functionInfo.getName(), (ScalarFunction) udf);
+          } else if (udf instanceof TableFunction) {
+            tEnv.registerFunction(functionInfo.getName(), (TableFunction<?>) udf);
+          } else if (udf instanceof AggregateFunction) {
+            tEnv.registerFunction(functionInfo.getName(), (AggregateFunction<?, ?>) udf);
+          }
+        }
+        //TODO: Class.forName(classPath, false, classLoader)
+      }
+    }
 
     // config
     BatchQueryConfig queryConfig = tEnv.queryConfig();
