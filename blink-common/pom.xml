@@ -28,10 +28,8 @@
     <artifactId>blink-common</artifactId>
     <version>v3.0.0</version>
   <dependencies>
-    <dependency>
-      <groupId>org.apache.flink</groupId>
-      <artifactId>flink-core</artifactId>
-    </dependency>
+
+
   </dependencies>
 
 </project>

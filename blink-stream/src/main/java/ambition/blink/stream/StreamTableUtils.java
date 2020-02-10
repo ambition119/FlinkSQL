@@ -18,58 +18,31 @@
 
 package ambition.blink.stream;
 
-import ambition.stream.sink.EsAppendTableSink;
-import ambition.stream.sink.EsUpsertTableSink;
 import java.util.Map;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.streaming.connectors.kafka.Kafka010TableSource;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlNodeList;
+import org.apache.flink.sql.parser.ddl.SqlCreateTable;
 import org.apache.flink.table.sinks.TableSink;
 import org.apache.flink.table.sources.TableSource;
-import ambition.blink.common.table.TableInfo;
 
 public class StreamTableUtils {
-
-  public static TableSource getTableSource(TableInfo source, Map<String,String> extParams) {
+  public static TableSource getTableSource(SqlCreateTable sqlCreateTable, Map<String,String> extParams) {
     TableSource result = null;
-    Map<String,TypeInformation<?>> outputSchemaMap = source.getFlinkUseSchema();
-    Map<String, String> kvs = source.getProps();
-    String type = kvs.getOrDefault("type", "kafka");
 
-    switch (type.toUpperCase()) {
-      case "KAFKA":
-//          TODO
-//        new Kafka010TableSource();
-        break;
-      default:
-        break;
+    SqlNodeList columnList = sqlCreateTable.getColumnList();
+    SqlNodeList propertyList = sqlCreateTable.getPropertyList();
+
+    for (SqlNode prop : propertyList) {
     }
+
 
     return result;
   }
 
-  public static TableSink getTableSink(TableInfo sink, Map<String,String> extParams) {
+  public static TableSink getTableSink(SqlCreateTable sqlCreateTable, Map<String,String> extParams) {
     TableSink result = null;
 
-    Map<String, String> kvs = sink.getProps();
-    String type = kvs.getOrDefault("type", "kafka");
 
-    switch (type.toUpperCase()) {
-      case "KAFKA":
-//        new Kafka010TableSource();
-        break;
-      case "ES":
-        boolean containsKey = kvs.containsKey("primary.key");
-        if (!containsKey) {
-          result = new EsAppendTableSink(kvs);
-        } else {
-          result = new EsUpsertTableSink(kvs);
-        }
-        break;
-
-      default:
-        break;
-    }
     return result;
   }
-
 }

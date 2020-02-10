@@ -15,32 +15,39 @@
     --> 封装为对应Flink的Job:env.sqlQuery/env.sqlUpdate
     
     
-    --> JobGraph和对应job提交，StandaloneClusterClient.submitJob或者YarnClusterClient.runDetached
+    --> JobGraph和对应job提交，ClusterClient.submitJob或者ClusterDescriptor.deployJobCluster
 
 三.发布版本：
     
-   [v3.0.0](https://github.com/ambition119/FlinkSQL/tree/v3.0.0)   待开发
-         使用最新发布版本的flink 1.9版本或者更高:
+   [v3.0.0](https://github.com/ambition119/FlinkSQL/tree/v3.0.0)   2020年1月
+         
+         1.使用flink 1.10版本
+               1.10之前的版本自带的sql解析功能不完善,如解析function,watermark等,所以比较鸡肋，还不如不用更换以前开发的解析层功能。
+         2.使用新接口ClusterClient.submitJob提交job
+         3.
+         4.
+               
              
-             [flink-sql-parser] flink自带的sql解析
-             流批处理一体化实现
-             钉钉/微信告警通知
+   [新特性](/doc/v3.0.0.md)  
+          
+          1. flink自带的sql解析
+          2. 使用新的job提交接口
+          2. 流批处理一体化实现
+          3. 钉钉/微信告警通知        
   
   
+   [v2.0.1](https://github.com/ambition119/FlinkSQL/tree/v2.0.1)   
    [v2.0.0](https://github.com/ambition119/FlinkSQL/tree/v2.0.0)   2019年4月
-   
-        blink-client    接口定义
-        blink-sql/calcite   stream和batch table的sql解析
-        blink-libraries   自定义source, sink, side开发
-        blink-batch   BatchTableSource和BatchTableSink
-        blink-stream  StreamTableSource和StreamTableSink
-        blink-job   batch/stream job 提交
-   
-   SQL书写语法参考Flink issues和对应提供的doc:
-        [SQL DDL ISSUE](https://issues.apache.org/jira/browse/FLINK-8039),
-        [SQL DDL DOC](https://docs.google.com/document/d/1TTP-GCC8wSsibJaSUyFZ_5NBAHYEB1FVmPpP7RgDGBA/edit?usp=sharing)。
-       
-   [新特性](/doc/v2.0.0.md)
+      
+           blink-client    接口定义
+           blink-sql/calcite   stream和batch table的sql解析
+           blink-libraries   自定义source, sink, side开发
+           blink-batch   BatchTableSource和BatchTableSink
+           blink-stream  StreamTableSource和StreamTableSink
+           blink-job   batch/stream job 提交
+          
+   [v2.0.1新特性](/doc/v2.0.1.md)    
+   [v2.0.0新特性](/doc/v2.0.0.md)    
         
         1. 抽取sql层被流和批使用,SQL参考flink issues和对应提供的doc
         2. 增加批处理开发
@@ -61,41 +68,87 @@
            
 四.样例
 
-#### v1.0.0sql开发流任务示例:
+#### v3.0.0 sql开发流任务示例:
+
+```sql
+
+```
+
+#### v2.0.1 sql开发流任务示例:
+batch sql示例：
+```sql
+CREATE FUNCTION demouf AS 'ambition.api.sql.function.DemoUDF' 
+LIBRARY 'hdfs://flink/udf/jedis.jar','hdfs://flink/udf/customudf.jar';
+
+CREATE TABLE csv_source (
+    id int, 
+    name varchar, 
+    `date` date , 
+    age int
+) 
+with (
+    type=source,
+    connect.type=json,
+    'file.path'='file:///FlinkSQL/blink-job/src/test/resources/demo.json'
+);
+
+CREATE TABLE csv_sink (
+    `date` date, 
+    age int, 
+    PRIMARY KEY (`date`)
+) 
+with (
+    type=sink,
+    connect.type=csv,
+    'file.path'='file:///FlinkSQL/blink-job/src/test/resources/demo_out.csv'
+);
+
+create view view_select as  
+    SELECT `date`, age FROM csv_source group by `date`,age
+;
+
+INSERT INTO csv_sink 
+    SELECT `date`, sum(age) FROM view_select group by `date`
+;
+
+```
+stream sql 示例：
 ```sql
 CREATE FUNCTION demouf AS 
       'ambition.api.sql.function.DemoUDF' 
-USING JAR 'hdfs://flink/udf/jedis.jar',
-      JAR 'hdfs://flink/udf/customudf.jar';
-      
+LIBRARY 'hdfs://flink/udf/jedis.jar','hdfs://flink/udf/customudf.jar';
       
 CREATE TABLE kafka_source (
-      `date` string,
+      `date` varchar,
       amount float, 
       proctime timestamp
       ) 
 with (
-      type=kafka,
+      type=source,
+      'connect.type'=kafka,
       'flink.parallelism'=1,
       'kafka.topic'=topic,
       'kafka.group.id'=flinks,
       'kafka.enable.auto.commit'=true,
       'kafka.bootstrap.servers'='localhost:9092'
 );
+
 CREATE TABLE mysql_sink (
-      `date` string, 
-      amount float, 
-      PRIMARY KEY (`date`,amount)
+      `date` varchar, 
+      total_amount float, 
+      PRIMARY KEY (`date`)
       ) 
 with (
       type=mysql,
+      'connect.type'=mysql,
       'mysql.connection'='localhost:3306',
       'mysql.db.name'=flink,
-      'mysql.batch.size'=0,
+      'mysql.batch.size'=10,
       'mysql.table.name'=flink_table,
       'mysql.user'=root,
       'mysql.pass'=root
 );
+
 CREATE VIEW view_select AS 
       SELECT `date`, 
               amount 
@@ -104,18 +157,18 @@ CREATE VIEW view_select AS
             `date`,
             amount
       ;
+
 INSERT INTO mysql_sink 
        SELECT 
           `date`, 
-          sum(amount) 
+          sum(amount) as total_amount
        FROM view_select 
        GROUP BY 
           `date`
       ;
 ```
 
-
-#### v2.0.0sql开发流任务示例:
+#### v2.0.0 sql开发流任务示例:
 batch sql示例：
 ```sql
 CREATE FUNCTION demouf AS 'ambition.api.sql.function.DemoUDF' 
@@ -206,6 +259,61 @@ INSERT INTO mysql_sink
           `date`
       ;
 ```
+
+
+#### v1.0.0 sql开发流任务示例:
+```sql
+CREATE FUNCTION demouf AS 
+      'ambition.api.sql.function.DemoUDF' 
+USING JAR 'hdfs://flink/udf/jedis.jar',
+      JAR 'hdfs://flink/udf/customudf.jar';
+      
+      
+CREATE TABLE kafka_source (
+      `date` string,
+      amount float, 
+      proctime timestamp
+      ) 
+with (
+      type=kafka,
+      'flink.parallelism'=1,
+      'kafka.topic'=topic,
+      'kafka.group.id'=flinks,
+      'kafka.enable.auto.commit'=true,
+      'kafka.bootstrap.servers'='localhost:9092'
+);
+CREATE TABLE mysql_sink (
+      `date` string, 
+      amount float, 
+      PRIMARY KEY (`date`,amount)
+      ) 
+with (
+      type=mysql,
+      'mysql.connection'='localhost:3306',
+      'mysql.db.name'=flink,
+      'mysql.batch.size'=0,
+      'mysql.table.name'=flink_table,
+      'mysql.user'=root,
+      'mysql.pass'=root
+);
+CREATE VIEW view_select AS 
+      SELECT `date`, 
+              amount 
+      FROM kafka_source 
+      GROUP BY 
+            `date`,
+            amount
+      ;
+INSERT INTO mysql_sink 
+       SELECT 
+          `date`, 
+          sum(amount) 
+       FROM view_select 
+       GROUP BY 
+          `date`
+      ;
+```
+
 
 五.代码关注
 

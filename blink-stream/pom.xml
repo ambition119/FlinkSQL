@@ -30,14 +30,20 @@
 
     <dependencies>
       <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
         <groupId>ambition</groupId>
-        <artifactId>blink-sql</artifactId>
+        <artifactId>blink-client</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>ambition</groupId>
-        <artifactId>es6-sink</artifactId>
+        <artifactId>blink-sql</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -45,47 +51,49 @@
         <groupId>org.apache.flink</groupId>
         <artifactId>flink-core</artifactId>
       </dependency>
+
       <dependency>
         <groupId>org.apache.flink</groupId>
         <artifactId>flink-runtime_${scala.binary.version}</artifactId>
       </dependency>
+
+
       <dependency>
         <groupId>org.apache.flink</groupId>
-        <artifactId>flink-runtime-web_${scala.binary.version}</artifactId>
+        <artifactId>flink-table-common</artifactId>
       </dependency>
+
       <dependency>
         <groupId>org.apache.flink</groupId>
-        <artifactId>flink-shaded-hadoop2</artifactId>
+        <artifactId>flink-table-api-java</artifactId>
       </dependency>
+
       <dependency>
         <groupId>org.apache.flink</groupId>
-        <artifactId>flink-json</artifactId>
+        <artifactId>flink-table-api-scala_${scala.binary.version}</artifactId>
       </dependency>
+
       <dependency>
         <groupId>org.apache.flink</groupId>
-        <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
+        <artifactId>flink-scala_${scala.binary.version}</artifactId>
       </dependency>
+
       <dependency>
         <groupId>org.apache.flink</groupId>
         <artifactId>flink-streaming-scala_${scala.binary.version}</artifactId>
       </dependency>
+
       <dependency>
         <groupId>org.apache.flink</groupId>
-        <artifactId>flink-table_${scala.binary.version}</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.flink</groupId>
-        <artifactId>flink-yarn_${scala.binary.version}</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.flink</groupId>
-        <artifactId>flink-connector-kafka-0.10_${scala.binary.version}</artifactId>
+        <artifactId>flink-table-api-java-bridge_${scala.binary.version}</artifactId>
       </dependency>
 
       <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <scope>test</scope>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-table-api-scala-bridge_${scala.binary.version}</artifactId>
       </dependency>
+
+
+
     </dependencies>
 </project>

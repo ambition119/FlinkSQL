@@ -19,12 +19,18 @@
 package ambition.blink.sql;
 
 public interface SqlConstant {
-  String CREATE="CREATE";
+  String CREATE_TABLE="(?i)^CREATE\\s+TABLE";
+
+  String CREATE_TMP_FUNCTION="(?i)^CREATE\\s+TEMPORARY\\s+FUNCTION";
+  String CREATE_FUNCTION="(?i)^CREATE\\s+FUNCTION";
+
+  String CREATE_VIEW="(?i)^CREATE\\s+VIEW";
+
+  String INSERT_INTO="(?i)^INSERT\\s+INTO";
+
   String FUNCTION="FUNCTION";
-  String TABLE_SOURCE ="SOURCE";
-  String TABLE_SINK ="SINK";
-  String TABLE_SIDE ="SIDE";
-  String TABLE_VIEW ="VIEW";
-  String INSERT_INTO ="INSERT_INTO";
+  String TABLE ="TABLE";
+  String VIEW ="VIEW";
+  String INSERT ="INSERT";
   String SQL_END_FLAG=";";
 }

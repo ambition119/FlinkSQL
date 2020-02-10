@@ -30,7 +30,6 @@
   <version>v3.0.0</version>
   <modules>
     <module>mysql</module>
-    <module>es6</module>
   </modules>
 
 </project>

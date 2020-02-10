@@ -20,6 +20,8 @@ package ambition.blink.common.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BlinkStringUtils {
 
@@ -107,24 +109,13 @@ public class BlinkStringUtils {
       return ret;
    }
 
-   public static String getReplaceString(String str) {
-      str = str.replaceAll("--.*", "")
-          .replaceAll("\r\n", " ")
-          .replaceAll("\n", " ")
-          .replace("\t", " ").trim();
-      return str;
-   }
-
-   public static String getString(Object obj){
-      if(obj == null){
-         return null;
+   public static boolean isContain(String regex, String sql){
+      Pattern pattern = Pattern.compile(regex);
+      Matcher matcher = pattern.matcher(sql);
+      if(matcher.find()){
+         return true;
       }
-
-      if(obj instanceof String){
-         return (String) obj;
-      }else {
-         return obj.toString();
-      }
+      return false;
    }
 
    public static boolean isChinese(String str) {

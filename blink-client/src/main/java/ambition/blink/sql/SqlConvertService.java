@@ -16,15 +16,16 @@
  * limitations under the License.
  */
 
-package ambition.stream.sink;
+package ambition.blink.sql;
 
-public interface ElasticSearchConfig {
-  String clusterName = "cluster.name";
-  String address = "es.address";
-  String port = "es.port";
-  String indexType = "es.index";
-  String indexNamePrefix = "es.index.name.prefix";
-  String indexNames = "es.index.names";
-  String jsonSchema = "es.json.schema";
-  String indexFlag = "es.index.flag";
+import java.util.List;
+import java.util.Map;
+
+public interface SqlConvertService {
+   /**
+    * @param sqlContext    sql语句集合
+    * @return sql语句分类对应的集合
+    * @throws Exception
+    */
+   Map<String,List<String>> sqlConvert(String sqlContext) throws Exception;
 }
