@@ -24,10 +24,14 @@ import ambition.blink.sql.impl.SqlServiceImpl;
 import ambition.blink.stream.job.impl.StreamJobClientImpl;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import org.apache.commons.cli.CommandLine;
+import org.apache.flink.api.common.JobExecutionResult;
+import org.apache.flink.api.common.JobSubmissionResult;
 import org.apache.flink.client.cli.DefaultCLI;
 import org.apache.flink.client.deployment.ClusterSpecification;
 import org.apache.flink.client.deployment.StandaloneClusterDescriptor;
+import org.apache.flink.client.deployment.StandaloneClusterId;
 import org.apache.flink.client.program.rest.RestClusterClient;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.JobManagerOptions;
@@ -65,13 +69,15 @@ public class StreamStandaloneJobRunExample {
     jobParameter.setJobName("streamExample");
     StreamGraph streamGraph = new StreamJobClientImpl().getStreamGraph(jobParameter, null);
 
-    clusterDescriptor.deployJobCluster(clusterSpecification, streamGraph.getJobGraph(), true);
+    RestClusterClient<StandaloneClusterId> clusterClient = clusterDescriptor
+        .deployJobCluster(clusterSpecification, streamGraph.getJobGraph(), true);
+    CompletableFuture<JobSubmissionResult> submitJob = clusterClient
+        .submitJob(streamGraph.getJobGraph());
+    JobSubmissionResult jobSubmissionResult = submitJob.get();
+    JobExecutionResult executionResult = jobSubmissionResult.getJobExecutionResult();
 
-
-    final RestClusterClient<?> clusterClient = clusterDescriptor.retrieve(defaultCLI.getClusterId(commandLine));
-
+    //或者
+//    final RestClusterClient<?> clusterClient = clusterDescriptor.retrieve(defaultCLI.getClusterId(commandLine));
   }
-
-
 
 }

@@ -37,7 +37,7 @@ public class SqlServiceImplTest {
   public void sqlConvertTest() throws Exception {
     Map<String, List<String>> map = sqlService.sqlConvert(sqlContext);
 
-    Assert.assertEquals(map.size(), 5);
+    Assert.assertEquals(map.size(), 4);
   }
 
   @Test
@@ -55,15 +55,9 @@ public class SqlServiceImplTest {
   @Test
   public void sqlTableParserTest() throws Exception {
     Map<String, List<String>> map = sqlService.sqlConvert(sqlContext);
-    List<String> source = map.get(SqlConstant.TABLE_SOURCE);
-    Assert.assertNotNull(source);
-    for (String sql: source) {
-      TableInfo tableInfo = sqlService.sqlTableParser(sql);
-      Assert.assertNotNull(tableInfo);
-    }
-
-    List<String> sink = map.get(SqlConstant.TABLE_SINK);
-    for (String sql: sink) {
+    List<String> table = map.get(SqlConstant.TABLE);
+    Assert.assertNotNull(table);
+    for (String sql: table) {
       TableInfo tableInfo = sqlService.sqlTableParser(sql);
       Assert.assertNotNull(tableInfo);
     }

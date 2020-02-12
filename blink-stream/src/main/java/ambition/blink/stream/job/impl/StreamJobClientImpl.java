@@ -83,36 +83,28 @@ public class StreamJobClientImpl implements JobClient {
     StreamQueryConfig queryConfig = tEnv.queryConfig();
 
     // source
-    List<String> sourceSqls = sqls.get(SqlConstant.TABLE_SOURCE);
-    if (CollectionUtils.isEmpty(sourceSqls)) {
-      throw new IllegalArgumentException("source table is not null");
+    List<String> tableSqls = sqls.get(SqlConstant.TABLE);
+    if (CollectionUtils.isEmpty(tableSqls)) {
+      throw new IllegalArgumentException("table is not null");
     }
 
-    //sink
-    List<String> sinkSqls = sqls.get(SqlConstant.TABLE_SINK);
-    if (CollectionUtils.isEmpty(sinkSqls)) {
-      throw new IllegalArgumentException("sink table is not null");
-    }
-
-    for (String sql: sourceSqls) {
+    for (String sql: tableSqls) {
       TableInfo tableInfo = sqlService.sqlTableParser(sql);
+      Map<String, String> props = tableInfo.getProps();
+      if (props.get(SqlConstant.TYPE).toLowerCase().equals(SqlConstant.SOURCE)) {
+        TableSource tableSource = StreamTableUtils.getTableSource(tableInfo, extParams);
+        tEnv.registerTableSource(tableInfo.getTableName(), tableSource);
+      } if (props.get(SqlConstant.TYPE).toLowerCase().equals(SqlConstant.SINK)) {
+        Map<String, TypeInformation<?>> outputSchemaMap = tableInfo.getFlinkUseSchema();
+        String[] fieldNames = new String[outputSchemaMap.size()];
+        String[] fieldNamesArray = outputSchemaMap.keySet().toArray(fieldNames);
 
-      TableSource tableSource = StreamTableUtils.getTableSource(tableInfo, extParams);
+        TypeInformation[] fieldTypes = new TypeInformation[outputSchemaMap.size()];
+        TypeInformation[] fieldTypesArray = outputSchemaMap.values().toArray(fieldTypes);
 
-      tEnv.registerTableSource(tableInfo.getTableName(), tableSource);
-    }
-
-    for (String sql: sinkSqls) {
-      TableInfo tableInfo = sqlService.sqlTableParser(sql);
-      Map<String, TypeInformation<?>> outputSchemaMap = tableInfo.getFlinkUseSchema();
-      String[] fieldNames = new String[outputSchemaMap.size()];
-      String[] fieldNamesArray = outputSchemaMap.keySet().toArray(fieldNames);
-
-      TypeInformation[] fieldTypes = new TypeInformation[outputSchemaMap.size()];
-      TypeInformation[] fieldTypesArray = outputSchemaMap.values().toArray(fieldTypes);
-
-      TableSink tableSink = StreamTableUtils.getTableSink(tableInfo, extParams);
-      tEnv.registerTableSink(tableInfo.getTableName(), fieldNamesArray, fieldTypesArray, tableSink);
+        TableSink tableSink = StreamTableUtils.getTableSink(tableInfo, extParams);
+        tEnv.registerTableSink(tableInfo.getTableName(), fieldNamesArray, fieldTypesArray, tableSink);
+      }
     }
 
     //是否含有view的操作

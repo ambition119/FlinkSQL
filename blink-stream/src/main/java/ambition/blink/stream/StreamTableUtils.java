@@ -18,6 +18,7 @@
 
 package ambition.blink.stream;
 
+import ambition.blink.sql.SqlConstant;
 import ambition.stream.sink.EsAppendTableSink;
 import ambition.stream.sink.EsUpsertTableSink;
 import java.util.Map;
@@ -33,9 +34,9 @@ public class StreamTableUtils {
     TableSource result = null;
     Map<String,TypeInformation<?>> outputSchemaMap = source.getFlinkUseSchema();
     Map<String, String> kvs = source.getProps();
-    String type = kvs.getOrDefault("type", "kafka");
+    String connectType = kvs.getOrDefault(SqlConstant.CONNECT_TYPE, "kafka");
 
-    switch (type.toUpperCase()) {
+    switch (connectType.toUpperCase()) {
       case "KAFKA":
 //          TODO
 //        new Kafka010TableSource();
@@ -51,9 +52,9 @@ public class StreamTableUtils {
     TableSink result = null;
 
     Map<String, String> kvs = sink.getProps();
-    String type = kvs.getOrDefault("type", "kafka");
+    String connectType = kvs.getOrDefault(SqlConstant.CONNECT_TYPE, "kafka");
 
-    switch (type.toUpperCase()) {
+    switch (connectType.toUpperCase()) {
       case "KAFKA":
 //        new Kafka010TableSource();
         break;

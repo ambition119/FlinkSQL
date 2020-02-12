@@ -20,7 +20,7 @@
 
     <groupId>ambition</groupId>
     <artifactId>blink</artifactId>
-    <version>v3.0.0</version>
+    <version>v2.0.1</version>
     <modules>
         <module>blink-common</module>
         <module>blink-client</module>
@@ -28,7 +28,7 @@
         <module>blink-batch</module>
         <module>blink-stream</module>
         <module>blink-job</module>
-      <module>blink-libraries</module>
+        <module>blink-libraries</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -101,11 +101,6 @@
             <dependency>
                 <groupId>org.apache.flink</groupId>
                 <artifactId>flink-yarn_${scala.binary.version}</artifactId>
-                <version>${flink.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.flink</groupId>
-                <artifactId>flink-connector-kafka-0.10_${scala.binary.version}</artifactId>
                 <version>${flink.version}</version>
             </dependency>
 

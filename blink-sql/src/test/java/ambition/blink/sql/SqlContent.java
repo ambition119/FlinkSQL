@@ -26,14 +26,15 @@ public interface SqlContent {
       "LIBRARY " +
       "'hdfs://flink/udf/jedis.jar','hdfs://flink/udf/customudf.jar';" +
 
-      "CREATE SOURCE TABLE kafak_source (" +
+      "CREATE TABLE kafak_source (" +
       "name varchar, " +
       "amount float, " +
       "`date` date," +
       "watermark for date AS withOffset(date,1000) " +
       ") " +
       "with (" +
-      "type=kafka," +
+      "type=source," +
+      "connect.type=kafka," +
       "'flink.parallelism'=1," +
       "'kafka.topic'='topic'," +
       "'kafka.group.id'='flinks'," +
@@ -41,12 +42,13 @@ public interface SqlContent {
       "'kafka.bootstrap.servers'='localhost:9092'" +
       ");" +
 
-      "CREATE SINK TABLE mysql_sink (" +
+      "CREATE TABLE mysql_sink (" +
       "`date` date, " +
       "amount float, " +
       "PRIMARY KEY (`date`,amount)) " +
       "with (" +
-      "type=mysql," +
+      "type=sink," +
+      "connect.type=mysql," +
       "'mysql.connection'='localhost:3306'," +
       "'mysql.db.name'=flink," +
       "'mysql.batch.size'=0," +

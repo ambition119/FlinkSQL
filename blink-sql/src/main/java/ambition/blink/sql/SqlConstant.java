@@ -21,8 +21,11 @@ package ambition.blink.sql;
 public interface SqlConstant {
   String CREATE="CREATE";
   String FUNCTION="FUNCTION";
-  String TABLE_SOURCE ="SOURCE";
-  String TABLE_SINK ="SINK";
+  String TABLE ="TABLE";
+  String SOURCE ="source";
+  String SINK ="sink";
+  String TYPE ="type";
+  String CONNECT_TYPE ="connect.type";
   String TABLE_SIDE ="SIDE";
   String TABLE_VIEW ="VIEW";
   String INSERT_INTO ="INSERT_INTO";

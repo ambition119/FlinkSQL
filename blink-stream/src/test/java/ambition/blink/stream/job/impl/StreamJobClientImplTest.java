@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.flink.streaming.api.graph.StreamGraph;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 
 public class StreamJobClientImplTest {
 
@@ -44,6 +45,7 @@ public class StreamJobClientImplTest {
     jobParameter.setJobName("stream_test");
   }
 
+//  @Test
   public void getStreamGraph() throws Exception {
     StreamGraph streamGraph = jobClient.getStreamGraph(jobParameter, null);
     Assert.assertNotNull(streamGraph);

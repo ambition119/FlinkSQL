@@ -64,16 +64,10 @@ public class SqlServiceImpl implements SqlService {
       throw new FlinkSqlException("sql contain Chinese char");
     }
 
-    if (!sqlContext.toUpperCase().contains(SqlConstant.TABLE_SOURCE)){
-      LOG.warn("sql not contain create source");
-      throw new FlinkSqlException("sql not contain create source");
+    if (!sqlContext.toUpperCase().contains(SqlConstant.TABLE)){
+      LOG.warn("sql not contain create table");
+      throw new FlinkSqlException("sql not contain create table");
     }
-
-    if (!sqlContext.toUpperCase().contains(SqlConstant.TABLE_SINK)){
-      LOG.warn("sql not contain create sink");
-      throw new FlinkSqlException("sql not contain create sink");
-    }
-
     //sql拆解
     List<String> sqls = BlinkStringUtils.splitSemiColon(sqlContext);
 
@@ -82,10 +76,8 @@ public class SqlServiceImpl implements SqlService {
     List<String> commList = new LinkedList<>();
     List<String> funList = new LinkedList<>();
     List<String> viewList = new LinkedList<>();
-    List<String> sourceList = new LinkedList<>();
+    List<String> tableList = new LinkedList<>();
     List<String> sideList = new LinkedList<>();
-    List<String> sinkList = new LinkedList<>();
-
 
     for (String sql: sqls) {
       if (StringUtils.isNotBlank(sql)){
@@ -93,13 +85,8 @@ public class SqlServiceImpl implements SqlService {
         String newSql = sql.trim().replaceAll(" +", " ").replaceAll("\\s+", " ");
 
         if (newSql.toUpperCase().startsWith(SqlConstant.CREATE)){
-          if (newSql.toUpperCase().contains(SqlConstant.CREATE+" "+ SqlConstant.TABLE_SOURCE)){
-            sourceList.add(newSql+ SqlConstant.SQL_END_FLAG);
-            continue;
-          }
-
-          if (newSql.toUpperCase().contains(SqlConstant.CREATE+" "+ SqlConstant.TABLE_SINK)){
-            sinkList.add(newSql+ SqlConstant.SQL_END_FLAG);
+          if (newSql.toUpperCase().contains(SqlConstant.CREATE+" "+ SqlConstant.TABLE)){
+            tableList.add(newSql+ SqlConstant.SQL_END_FLAG);
             continue;
           }
 
@@ -146,16 +133,12 @@ public class SqlServiceImpl implements SqlService {
       result.put(SqlConstant.FUNCTION,funList);
     }
 
-    if (CollectionUtils.isNotEmpty(sourceList)){
-      result.put(SqlConstant.TABLE_SOURCE,sourceList);
+    if (CollectionUtils.isNotEmpty(tableList)){
+      result.put(SqlConstant.TABLE,tableList);
     }
 
     if (CollectionUtils.isNotEmpty(sideList)){
       result.put(SqlConstant.TABLE_SIDE,sideList);
-    }
-
-    if (CollectionUtils.isNotEmpty(sinkList)){
-      result.put(SqlConstant.TABLE_SINK,sinkList);
     }
 
     return result;

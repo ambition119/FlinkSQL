@@ -19,45 +19,42 @@
 package ambition.blink.sql;
 
 public interface SqlContent {
-  String sqls = "CREATE FUNCTION " +
-      "demouf " +
-      "AS " +
-      "'ambition.api.sql.function.DemoUDF' " +
-      "LIBRARY " +
-      "'hdfs://flink/udf/jedis.jar','hdfs://flink/udf/customudf.jar';" +
-
-      "CREATE SOURCE TABLE csv_source (" +
+  String sqls =
+      "CREATE TABLE csv_source (" +
+      "id int, " +
       "name varchar, " +
-      "amount float, " +
-      "`date` date" +
+      "`date` date , " +
+      "age int" +
       ") " +
       "with (" +
-      "type=csv," +
-      "'file.path'='file://demo_in.csv'" +
+      "type=source," +
+      "connect.type=json," +
+      "'file.path'='file:///FlinkSQL/blink-job/src/test/resources/demo.json'" +
       ");" +
 
-      "CREATE SINK TABLE csv_sink (" +
+      "CREATE TABLE csv_sink (" +
       "`date` date, " +
-      "amount float, " +
-      "PRIMARY KEY (`date`,amount)) " +
+      "age int, " +
+      "PRIMARY KEY (`date`)) " +
       "with (" +
-      "type=csv," +
-      "'file.path'='file://demo_out.csv'" +
+      "type=sink," +
+      "connect.type=csv," +
+      "'file.path'='file:///FlinkSQL/blink-job/src/test/resources/demo_out.csv'" +
       ");" +
 
       "create view view_select as  " +
       "SELECT " +
       "`date`, " +
-      "amount " +
+      "age " +
       "FROM " +
       "csv_source " +
-      "group by `date`,amount;" +
+      "group by `date`,age;" +
 
       "insert " +
       "into csv_sink " +
       "SELECT " +
       "`date`, " +
-      "sum(amount) " +
+      "sum(age) " +
       "FROM " +
       "view_select " +
       "group by `date`;";

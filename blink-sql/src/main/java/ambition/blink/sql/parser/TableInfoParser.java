@@ -31,26 +31,19 @@ import ambition.blink.common.utils.BlinkStringUtils;
 
 public class TableInfoParser {
 
-  private static final String TABLE_SOURCE ="SOURCE";
-  private static final String TABLE_SINK ="SINK";
+  private static final String TABLE ="TABLE";
 
-  public static final String CREATE_SOURCE_PATTERN_STR = "(?i)create\\s+source\\s+table\\s+(\\S+)\\s*\\((.+)\\)\\s*with\\s*\\((.+)\\)";
-  public static final Pattern CREATE_SOURCE_PATTERN = Pattern.compile(CREATE_SOURCE_PATTERN_STR);
-
-  public static final String CREATE_SINK_PATTERN_STR = "(?i)create\\s+sink\\s+table\\s+(\\S+)\\s*\\((.+)\\)\\s*with\\s*\\((.+)\\)";
-  public static final Pattern CREATE_SINK_PATTERN = Pattern.compile(CREATE_SINK_PATTERN_STR);
+  public static final String CREATE_TABLE_PATTERN_STR = "(?i)create\\s+table\\s+(\\S+)\\s*\\((.+)\\)\\s*with\\s*\\((.+)\\)";
+  public static final Pattern CREATE_TABLE_PATTERN = Pattern.compile(CREATE_TABLE_PATTERN_STR);
 
   private static CreateTableParser createTableParser = CreateTableParser.newInstance();
 
   public static TableInfo parser(String ddl){
     TableInfo tableInfo = new TableInfo();
     CreateTableParser.SqlParserResult parserResult = null;
-    if (ddl.toUpperCase().contains(TABLE_SOURCE)){
+    if (ddl.toUpperCase().contains(TABLE)){
       tableInfo.setTableType(TableType.SOURCE);
-      parserResult = createTableParser.parseSql(BlinkStringUtils.getReplaceString(ddl), CREATE_SOURCE_PATTERN);
-    } else if(ddl.toUpperCase().contains(TABLE_SINK)){
-      tableInfo.setTableType(TableType.SINK);
-      parserResult = createTableParser.parseSql(BlinkStringUtils.getReplaceString(ddl), CREATE_SINK_PATTERN);
+      parserResult = createTableParser.parseSql(BlinkStringUtils.getReplaceString(ddl), CREATE_TABLE_PATTERN);
     }
 
     //字段和类型

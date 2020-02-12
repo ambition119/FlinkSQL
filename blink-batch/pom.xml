@@ -21,12 +21,10 @@
     <parent>
         <artifactId>blink</artifactId>
         <groupId>ambition</groupId>
-        <version>v3.0.0</version>
+        <version>v2.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>blink-batch</artifactId>
-    <version>v3.0.0</version>
 
     <dependencies>
         <dependency>

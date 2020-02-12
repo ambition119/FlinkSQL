@@ -101,37 +101,30 @@ public class BatchJobClientImpl implements JobClient {
     BatchQueryConfig queryConfig = tEnv.queryConfig();
 
     // source
-    List<String> sourceSqls = sqls.get(SqlConstant.TABLE_SOURCE);
-    if (CollectionUtils.isEmpty(sourceSqls)) {
-      throw new IllegalArgumentException("source table is not null");
+    List<String> tableSqls = sqls.get(SqlConstant.TABLE);
+    if (CollectionUtils.isEmpty(tableSqls)) {
+      throw new IllegalArgumentException("table is not null");
     }
 
-    //sink
-    List<String> sinkSqls = sqls.get(SqlConstant.TABLE_SINK);
-    if (CollectionUtils.isEmpty(sinkSqls)) {
-      throw new IllegalArgumentException("sink table is not null");
-    }
-
-    for (String sql: sourceSqls) {
+    for (String sql: tableSqls) {
       TableInfo tableInfo = sqlService.sqlTableParser(sql);
+      Map<String, String> props = tableInfo.getProps();
+      if (props.get(SqlConstant.TYPE).toLowerCase().equals(SqlConstant.SOURCE)) {
+        BatchTableSource tableSource = BatchTableUtils.getBatchTableSource(tableInfo, extParams);
 
-      BatchTableSource tableSource = BatchTableUtils.getBatchTableSource(tableInfo, extParams);
+        tEnv.registerTableSource(tableInfo.getTableName(), tableSource);
+      } if (props.get(SqlConstant.TYPE).toLowerCase().equals(SqlConstant.SINK)) {
+        Map<String, TypeInformation<?>> outputSchemaMap = tableInfo.getFlinkUseSchema();
+        String[] fieldNames = new String[outputSchemaMap.size()];
+        String[] fieldNamesArray = outputSchemaMap.keySet().toArray(fieldNames);
 
-      tEnv.registerTableSource(tableInfo.getTableName(), tableSource);
-    }
+        TypeInformation[] fieldTypes = new TypeInformation[outputSchemaMap.size()];
+        TypeInformation[] fieldTypesArray = outputSchemaMap.values().toArray(fieldTypes);
 
-    for (String sql: sinkSqls) {
-      TableInfo tableInfo = sqlService.sqlTableParser(sql);
-      Map<String, TypeInformation<?>> outputSchemaMap = tableInfo.getFlinkUseSchema();
-      String[] fieldNames = new String[outputSchemaMap.size()];
-      String[] fieldNamesArray = outputSchemaMap.keySet().toArray(fieldNames);
-
-      TypeInformation[] fieldTypes = new TypeInformation[outputSchemaMap.size()];
-      TypeInformation[] fieldTypesArray = outputSchemaMap.values().toArray(fieldTypes);
-
-      BatchTableSink tableSink = BatchTableUtils.getBatchTableSink(tableInfo, extParams);
-      // 查看该方法的源码使用
-      tEnv.registerTableSink(tableInfo.getTableName(), fieldNamesArray, fieldTypesArray, tableSink);
+        BatchTableSink tableSink = BatchTableUtils.getBatchTableSink(tableInfo, extParams);
+        // 查看该方法的源码使用
+        tEnv.registerTableSink(tableInfo.getTableName(), fieldNamesArray, fieldTypesArray, tableSink);
+      }
     }
 
     //是否含有view的操作

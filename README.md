@@ -27,6 +27,7 @@
              钉钉/微信告警通知
   
   
+   [v2.0.1](https://github.com/ambition119/FlinkSQL/tree/v2.0.1)   
    [v2.0.0](https://github.com/ambition119/FlinkSQL/tree/v2.0.0)   2019年4月
    
         blink-client    接口定义
@@ -35,11 +36,8 @@
         blink-batch   BatchTableSource和BatchTableSink
         blink-stream  StreamTableSource和StreamTableSink
         blink-job   batch/stream job 提交
-   
-   SQL书写语法参考Flink issues和对应提供的doc:
-        [SQL DDL ISSUE](https://issues.apache.org/jira/browse/FLINK-8039),
-        [SQL DDL DOC](https://docs.google.com/document/d/1TTP-GCC8wSsibJaSUyFZ_5NBAHYEB1FVmPpP7RgDGBA/edit?usp=sharing)。
        
+   [新特性](/doc/v2.0.1.md)
    [新特性](/doc/v2.0.0.md)
         
         1. 抽取sql层被流和批使用,SQL参考flink issues和对应提供的doc

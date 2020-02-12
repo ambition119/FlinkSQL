@@ -19,6 +19,7 @@
 package ambition.blink.batch;
 
 import ambition.blink.batch.table.source.JsonTableSource;
+import ambition.blink.sql.SqlConstant;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.io.CsvInputFormat;
 import org.apache.flink.core.fs.FileSystem;
@@ -39,7 +40,7 @@ public class BatchTableUtils {
     BatchTableSource result = null;
     Map<String,TypeInformation<?>> outputSchemaMap = source.getFlinkUseSchema();
     Map<String, String> kvs = source.getProps();
-    String type = kvs.getOrDefault("type", "csv");
+    String connectType = kvs.getOrDefault(SqlConstant.CONNECT_TYPE, "csv");
 
     String filePath;
 
@@ -54,7 +55,7 @@ public class BatchTableUtils {
       selectedFields[i] = i;
     }
 
-    switch (type.toUpperCase()) {
+    switch (connectType.toUpperCase()) {
       // TXT and CSV
       case "CSV":
         filePath = kvs.getOrDefault("file.path", "/");
@@ -80,9 +81,9 @@ public class BatchTableUtils {
     BatchTableSink result = null;
 
     Map<String, String> kvs = sink.getProps();
-    String type = kvs.getOrDefault("type", "csv");
+    String connectType = kvs.getOrDefault(SqlConstant.CONNECT_TYPE, "csv");
 
-    switch (type.toUpperCase()) {
+    switch (connectType.toUpperCase()) {
       case "CSV":
         String filePath = kvs.getOrDefault("file.path", "/");
         String fieldDelim = kvs.getOrDefault("field.delim", CsvInputFormat.DEFAULT_FIELD_DELIMITER);

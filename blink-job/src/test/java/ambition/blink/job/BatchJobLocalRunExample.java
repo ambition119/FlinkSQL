@@ -54,23 +54,25 @@ public class BatchJobLocalRunExample {
   }
 
   static String sqls =
-      "CREATE SOURCE TABLE csv_source (" +
+      "CREATE TABLE csv_source (" +
       "id int, " +
       "name varchar, " +
       "`date` date , " +
       "age int" +
       ") " +
       "with (" +
-      "type=json," +
+      "type=source," +
+      "connect.type=json," +
       "'file.path'='file:///FlinkSQL/blink-job/src/test/resources/demo.json'" +
       ");" +
 
-      "CREATE SINK TABLE csv_sink (" +
+      "CREATE TABLE csv_sink (" +
       "`date` date, " +
       "age int, " +
       "PRIMARY KEY (`date`)) " +
       "with (" +
-      "type=csv," +
+      "type=sink," +
+      "connect.type=csv," +
       "'file.path'='file:///FlinkSQL/blink-job/src/test/resources/demo_out.csv'" +
       ");" +
 
