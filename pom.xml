@@ -32,7 +32,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <calcite.version>1.21.0</calcite.version>
+        <calcite.version>1.32.0</calcite.version>
         <elasticsearch.version>6.3.1</elasticsearch.version>
         <flink.version>1.10.0</flink.version>
         <flink.shaded.version>9.0</flink.shaded.version>
